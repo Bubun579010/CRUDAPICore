@@ -25,11 +25,7 @@ namespace CRUDApi.Repository.Services
                 throw;
             }
         }
-        public async Task<PagedResult<Department>> GetDepartmentsPaged(
-            int pageNumber,
-            int pageSize,
-            string sortBy = "ID",
-            string sortOrder = "asc")
+        public async Task<PagedResult<Department>> GetDepartmentsPaged(int pageNumber,int pageSize,string sortBy = "ID",string sortOrder = "asc")
         {
             if (pageNumber <= 0) pageNumber = 1;
             if (pageSize <= 0) pageSize = 10;
