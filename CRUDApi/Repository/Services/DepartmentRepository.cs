@@ -109,6 +109,8 @@ namespace CRUDApi.Repository.Services
         {
             try
             {
+                if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
+                    throw new Exception("Name & Description should not be empty.");
                 var department = await _context.Departments.FindAsync(dept.ID);
                 if (department == null)
                     throw new Exception();
