@@ -18,25 +18,21 @@ namespace CRUDApi.Repository.Services
         {
             try
             {
-                return await _context.Departments.ToListAsync();
+                return await _context.Departments.Where(D => D.Status == true).ToListAsync();
             }
             catch (Exception)
             {
                 throw;
             }
         }
-        public async Task<PagedResult<Department>> GetDepartmentsPaged(
-            int pageNumber,
-            int pageSize,
-            string sortBy = "ID",
-            string sortOrder = "asc")
+        public async Task<PagedResult<Department>> GetDepartmentsPaged(int pageNumber,int pageSize,string sortBy = "ID",string sortOrder = "asc")
         {
             if (pageNumber <= 0) pageNumber = 1;
             if (pageSize <= 0) pageSize = 10;
             sortBy = string.IsNullOrWhiteSpace(sortBy) ? "ID" : sortBy.Trim();
             sortOrder = string.IsNullOrWhiteSpace(sortOrder) ? "asc" : sortOrder.Trim().ToLower();
 
-            var query = _context.Departments.AsQueryable();
+            var query = _context.Departments.Where(D => D.Status == true).AsQueryable();
 
             var prop = typeof(Department).GetProperty(sortBy,BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
@@ -77,9 +73,9 @@ namespace CRUDApi.Repository.Services
         {
             try
             {
-                var dept = await _context.Departments.FirstOrDefaultAsync(D => D.ID == id);
-                if (dept == null)
-                    throw new Exception();
+                var dept = await _context.Departments.Where(D => D.Status == true).FirstOrDefaultAsync(D => D.ID == id);
+                if (dept == null || dept.Status == false)
+                    throw new Exception("The record does not exist.");
                 return dept;
             }
             catch (Exception)
@@ -114,7 +110,7 @@ namespace CRUDApi.Repository.Services
                 if (department == null)
                     throw new Exception();
 
-                bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == dept.Name.ToLower());
+                bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == dept.Name.ToLower() && D.ID != dept.ID);
                 if (nameExists)
                     throw new InvalidOperationException("Department Name already exists.");
 

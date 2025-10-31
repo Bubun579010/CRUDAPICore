@@ -19,5 +19,10 @@ namespace CRUDApi.Data
                 .HasIndex(d => d.Name)
                 .IsUnique();
         }
+
+        //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        //{
+        //    return base.SaveChangesAsync(cancellationToken);
+        //}
     }
 }
