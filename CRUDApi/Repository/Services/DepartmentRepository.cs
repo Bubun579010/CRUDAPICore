@@ -1,6 +1,7 @@
 ﻿using CRUDApi.Data;
 using CRUDApi.Models;
 using CRUDApi.Models.Common;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,7 +15,7 @@ namespace CRUDApi.Repository.Services
         {
             _context = context;
         }
-        public async Task<IEnumerable<Department>> GetDepartments()
+        public async Task<IEnumerable<DepartmentEntity>> GetDepartments()
         {
             try
             {
@@ -25,7 +26,7 @@ namespace CRUDApi.Repository.Services
                 throw;
             }
         }
-        public async Task<PagedResult<Department>> GetDepartmentsPaged(int pageNumber,int pageSize,string sortBy = "ID",string sortOrder = "asc")
+        public async Task<PagedResult<DepartmentEntity>> GetDepartmentsPaged(int pageNumber,int pageSize,string sortBy = "ID",string sortOrder = "asc")
         {
             if (pageNumber <= 0) pageNumber = 1;
             if (pageSize <= 0) pageSize = 10;
@@ -34,19 +35,19 @@ namespace CRUDApi.Repository.Services
 
             var query = _context.Departments.Where(D => D.Status == true).AsQueryable();
 
-            var prop = typeof(Department).GetProperty(sortBy,BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            var prop = typeof(DepartmentEntity).GetProperty(sortBy,BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
             if (prop != null)
             {
-                var parameter = Expression.Parameter(typeof(Department), "d");
+                var parameter = Expression.Parameter(typeof(DepartmentEntity), "d");
                 var propertyAccess = Expression.MakeMemberAccess(parameter, prop);
                 var orderByExp = Expression.Lambda(propertyAccess, parameter);
 
                 string methodName = sortOrder == "desc" ? "OrderByDescending" : "OrderBy";
 
-                var resultExp = Expression.Call(typeof(Queryable),methodName,new Type[] { typeof(Department), prop.PropertyType },query.Expression,Expression.Quote(orderByExp));
+                var resultExp = Expression.Call(typeof(Queryable),methodName,new Type[] { typeof(DepartmentEntity), prop.PropertyType },query.Expression,Expression.Quote(orderByExp));
 
-                query = query.Provider.CreateQuery<Department>(resultExp);
+                query = query.Provider.CreateQuery<DepartmentEntity>(resultExp);
             }
             else
             {
@@ -59,7 +60,7 @@ namespace CRUDApi.Repository.Services
 
             var totalPages = (int)Math.Ceiling(totalRecords == 0 ? 1 : (double)totalRecords / pageSize);
 
-            return new PagedResult<Department>
+            return new PagedResult<DepartmentEntity>
             {
                 Data = data,
                 TotalRecords = totalRecords,
@@ -69,7 +70,7 @@ namespace CRUDApi.Repository.Services
             };
         }
 
-        public async Task<Department> GetDepartment(int id)
+        public async Task<DepartmentEntity> GetDepartment(int id)
         {
             try
             {
@@ -83,10 +84,12 @@ namespace CRUDApi.Repository.Services
                 throw;
             }
         }
-        public async Task<Department> AddDepartment(Department dept)
+        public async Task<DepartmentEntity> AddDepartment(DepartmentEntity dept)
         {
             try
             {
+                if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
+                    throw new Exception("Name & Description should not be empty.");
                 bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == dept.Name.ToLower());
                 if (nameExists)
                     throw new InvalidOperationException("Department Name already exists.");
@@ -102,7 +105,7 @@ namespace CRUDApi.Repository.Services
                 throw;
             }
         }
-        public async Task<Department> UpdateDepartment(Department dept)
+        public async Task<DepartmentEntity> UpdateDepartment(DepartmentEntity dept)
         {
             try
             {
@@ -126,7 +129,7 @@ namespace CRUDApi.Repository.Services
                 throw;
             }
         }
-        public async Task<Department> DeleteDepartment(int id)
+        public async Task<DepartmentEntity> DeleteDepartment(int id)
         {
             var dept = await _context.Departments.FindAsync(id);
             if (dept != null)

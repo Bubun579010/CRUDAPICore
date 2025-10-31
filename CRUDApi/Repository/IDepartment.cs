@@ -5,11 +5,11 @@ namespace CRUDApi.Repository
 {
     public interface IDepartment
     {
-        Task<IEnumerable<Department>> GetDepartments();
-        Task<PagedResult<Department>> GetDepartmentsPaged(int pageNumber, int pageSize, string sortBy, string sortOrder);
-        Task<Department> GetDepartment(int id);
-        Task<Department> AddDepartment(Department dept);
-        Task<Department> UpdateDepartment(Department dept);
-        Task<Department> DeleteDepartment(int id);
+        Task<IEnumerable<DepartmentEntity>> GetDepartments();
+        Task<PagedResult<DepartmentEntity>> GetDepartmentsPaged(int pageNumber, int pageSize, string sortBy, string sortOrder);
+        Task<DepartmentEntity> GetDepartment(int id);
+        Task<DepartmentEntity> AddDepartment(DepartmentEntity dept);
+        Task<DepartmentEntity> UpdateDepartment(DepartmentEntity dept);
+        Task<DepartmentEntity> DeleteDepartment(int id);
     }
 }

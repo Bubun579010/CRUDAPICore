@@ -9,20 +9,15 @@ namespace CRUDApi.Data
         {
         }
 
-        public DbSet<Department> Departments { get; set; }
+        public DbSet<DepartmentEntity> Departments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Department>()
-                .HasIndex(d => d.Name)
+            modelBuilder.Entity<DepartmentEntity>()
+                .HasIndex(D => D.Name)
                 .IsUnique();
         }
-
-        //public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        //{
-        //    return base.SaveChangesAsync(cancellationToken);
-        //}
     }
 }
