@@ -1,7 +1,9 @@
 using CRUDApi.Data;
 using CRUDApi.Repository;
 using CRUDApi.Repository.Services;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using FluentValidation.AspNetCore;
 
 namespace CRUDApi
 {
@@ -31,6 +33,9 @@ namespace CRUDApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+            builder.Services.AddFluentValidationAutoValidation();
+            builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
             var app = builder.Build();
 

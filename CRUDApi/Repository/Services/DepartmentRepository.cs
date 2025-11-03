@@ -1,7 +1,6 @@
 ﻿using CRUDApi.Data;
 using CRUDApi.Models;
 using CRUDApi.Models.Common;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -88,8 +87,8 @@ namespace CRUDApi.Repository.Services
         {
             try
             {
-                if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
-                    throw new Exception("Name & Description should not be empty.");
+                //if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
+                //    throw new Exception("Name & Description should not be empty.");
                 bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == dept.Name.ToLower());
                 if (nameExists)
                     throw new InvalidOperationException("Department Name already exists.");
@@ -109,8 +108,8 @@ namespace CRUDApi.Repository.Services
         {
             try
             {
-                if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
-                    throw new Exception("Name & Description should not be empty.");
+                //if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
+                //    throw new Exception("Name & Description should not be empty.");
                 var department = await _context.Departments.FindAsync(dept.ID);
                 if (department == null)
                     throw new Exception();
@@ -138,6 +137,7 @@ namespace CRUDApi.Repository.Services
             {
                 //_context.Departments.Remove(dept);
                 dept.Status = false;
+                dept.ModifiedOn = DateTime.Now;
                 await _context.SaveChangesAsync();
                 return dept;
             }

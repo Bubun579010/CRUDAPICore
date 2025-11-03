@@ -1,6 +1,6 @@
 ﻿namespace CRUDApi.Models.Common
 {
-    public class Payload
+    public class GetDetails
     {
         public int ID {  get; set; }
         public string Name { get; set; }
