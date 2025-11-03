@@ -42,11 +42,11 @@ namespace CRUDApi.Controllers
             return Ok(createDept);
         }
 
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult> Update(int id, [FromBody]UpdatePayload payload)
+        [HttpPut]
+        public async Task<ActionResult> Update([FromBody]UpdatePayload payload)
         {
-            if (id != payload.ID)
-                return BadRequest();
+            //if (id != payload.ID)
+            //    return BadRequest();
 
             var updateDept = await _dept.UpdateDepartment(payload);
             return Ok(updateDept);
