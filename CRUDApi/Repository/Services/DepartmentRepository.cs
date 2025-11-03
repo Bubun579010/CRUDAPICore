@@ -1,6 +1,7 @@
 ﻿using CRUDApi.Data;
 using CRUDApi.Models;
 using CRUDApi.Models.Common;
+using CRUDApi.Models.Payload;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,18 +15,21 @@ namespace CRUDApi.Repository.Services
         {
             _context = context;
         }
-        public async Task<IEnumerable<DepartmentEntity>> GetDepartments()
+
+        private static GetDetails Details(DepartmentEntity entity) => new GetDetails
         {
-            try
-            {
-                return await _context.Departments.Where(D => D.Status == true).ToListAsync();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            ID = entity.ID,
+            Name = entity.Name,
+            Description = entity.Description, 
+            Status = entity.Status
+        };
+
+        public async Task<IEnumerable<GetDetails>> GetDepartments()
+        {
+            var result = await _context.Departments.Where(D => D.Status == true).ToListAsync();
+            return result.Select(Details);
         }
-        public async Task<PagedResult<DepartmentEntity>> GetDepartmentsPaged(int pageNumber,int pageSize,string sortBy = "ID",string sortOrder = "asc")
+        public async Task<PagedResult<GetDetails>> GetDepartmentsPaged(int pageNumber, int pageSize, string sortBy = "ID", string sortOrder = "asc")
         {
             if (pageNumber <= 0) pageNumber = 1;
             if (pageSize <= 0) pageSize = 10;
@@ -34,7 +38,7 @@ namespace CRUDApi.Repository.Services
 
             var query = _context.Departments.Where(D => D.Status == true).AsQueryable();
 
-            var prop = typeof(DepartmentEntity).GetProperty(sortBy,BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            var prop = typeof(DepartmentEntity).GetProperty(sortBy, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 
             if (prop != null)
             {
@@ -44,7 +48,7 @@ namespace CRUDApi.Repository.Services
 
                 string methodName = sortOrder == "desc" ? "OrderByDescending" : "OrderBy";
 
-                var resultExp = Expression.Call(typeof(Queryable),methodName,new Type[] { typeof(DepartmentEntity), prop.PropertyType },query.Expression,Expression.Quote(orderByExp));
+                var resultExp = Expression.Call(typeof(Queryable), methodName, new Type[] { typeof(DepartmentEntity), prop.PropertyType }, query.Expression, Expression.Quote(orderByExp));
 
                 query = query.Provider.CreateQuery<DepartmentEntity>(resultExp);
             }
@@ -57,11 +61,11 @@ namespace CRUDApi.Repository.Services
 
             var data = await query.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
 
-            var totalPages = (int)Math.Ceiling(totalRecords == 0 ? 1 : (double)totalRecords / pageSize);
+            var totalPages = (int)Math.Ceiling((double)totalRecords / pageSize);
 
-            return new PagedResult<DepartmentEntity>
+            return new PagedResult<GetDetails>
             {
-                Data = data,
+                Data = data.Select(Details),
                 TotalRecords = totalRecords,
                 PageNumber = pageNumber,
                 PageSize = pageSize,
@@ -69,79 +73,62 @@ namespace CRUDApi.Repository.Services
             };
         }
 
-        public async Task<DepartmentEntity> GetDepartment(int id)
+        public async Task<GetDetails> GetDepartment(int id)
         {
-            try
-            {
-                var dept = await _context.Departments.Where(D => D.Status == true).FirstOrDefaultAsync(D => D.ID == id);
-                if (dept == null || dept.Status == false)
-                    throw new Exception("The record does not exist.");
-                return dept;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            var dept = await _context.Departments.Where(D => D.Status == true).FirstOrDefaultAsync(D => D.ID == id);
+            if (dept == null || dept.Status == false)
+                throw new Exception("Department does not exist.");
+
+            return Details(dept);
         }
-        public async Task<DepartmentEntity> AddDepartment(DepartmentEntity dept)
+        public async Task<GetDetails> AddDepartment(CreatePayload payload)
         {
-            try
-            {
-                //if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
-                //    throw new Exception("Name & Description should not be empty.");
-                bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == dept.Name.ToLower());
-                if (nameExists)
-                    throw new InvalidOperationException("Department Name already exists.");
 
-                dept.CreatedOn = DateTime.Now;
-                dept.ModifiedOn = DateTime.Now;
-                var department = await _context.Departments.AddAsync(dept);
-                await _context.SaveChangesAsync();
-                return department.Entity;
-            }
-            catch (Exception)
+            bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == payload.Name.ToLower());
+            if (nameExists)
+                throw new InvalidOperationException("Department Name already exists.");
+
+            var dept = new DepartmentEntity
             {
-                throw;
-            }
+                Name = payload.Name.ToUpper(),
+                Description = payload.Description.ToUpper(),
+                Status = payload.Status,
+                CreatedOn = DateTime.Now,
+                ModifiedOn = DateTime.Now
+            };
+
+            await _context.Departments.AddAsync(dept);
+            await _context.SaveChangesAsync();
+            return Details(dept);
         }
-        public async Task<DepartmentEntity> UpdateDepartment(DepartmentEntity dept)
+        public async Task<GetDetails> UpdateDepartment(UpdatePayload payload)
         {
-            try
-            {
-                //if (string.IsNullOrEmpty(dept.Name) || string.IsNullOrEmpty(dept.Description) && string.IsNullOrWhiteSpace(dept.Name) || string.IsNullOrWhiteSpace(dept.Description))
-                //    throw new Exception("Name & Description should not be empty.");
-                var department = await _context.Departments.FindAsync(dept.ID);
-                if (department == null)
-                    throw new Exception();
 
-                bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == dept.Name.ToLower() && D.ID != dept.ID);
-                if (nameExists)
-                    throw new InvalidOperationException("Department Name already exists.");
+            var dept = await _context.Departments.FindAsync(payload.ID);
+            if (dept == null)
+                throw new Exception();
 
-                department.Name = dept.Name;
-                department.Description = dept.Description;
-                department.Status = dept.Status;
-                department.ModifiedOn = DateTime.Now;
-                await _context.SaveChangesAsync();
-                return department;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+            bool nameExists = await _context.Departments.AnyAsync(D => D.Name.ToLower() == payload.Name.ToLower() && D.ID != payload.ID);
+            if (nameExists)
+                throw new InvalidOperationException("Department Name already exists.");
+
+            dept.Name = payload.Name.ToUpper();
+            dept.Description = payload.Description.ToUpper();
+            dept.Status = payload.Status;
+            dept.ModifiedOn = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return Details(dept);
         }
-        public async Task<DepartmentEntity> DeleteDepartment(int id)
+        public async Task<GetDetails> DeleteDepartment(int id)
         {
             var dept = await _context.Departments.FindAsync(id);
-            if (dept != null)
-            {
-                //_context.Departments.Remove(dept);
-                dept.Status = false;
-                dept.ModifiedOn = DateTime.Now;
-                await _context.SaveChangesAsync();
-                return dept;
-            }
-            return null;
+            if (dept == null)
+                throw new Exception("Department does not exist.");
+
+            dept.Status = false;
+            dept.ModifiedOn = DateTime.Now;
+            await _context.SaveChangesAsync();
+            return Details(dept);
         }
     }
 }

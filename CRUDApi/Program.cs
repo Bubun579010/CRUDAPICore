@@ -1,9 +1,10 @@
 using CRUDApi.Data;
+using CRUDApi.ExceptionHandler;
 using CRUDApi.Repository;
 using CRUDApi.Repository.Services;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
 using FluentValidation.AspNetCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace CRUDApi
 {
@@ -45,6 +46,8 @@ namespace CRUDApi
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            app.UseMiddleware<GlobalExceptionHandler>();
 
             app.UseHttpsRedirection();
 

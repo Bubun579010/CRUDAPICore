@@ -17,7 +17,7 @@ namespace CRUDApi.Validation
 
             // Description validation
             RuleFor(D => D.Description).NotEmpty().WithMessage("Description is required.")
-                .Length(5, 200).WithMessage("Description must be between 5 and 200 characters.");
+                .Length(10, 200).WithMessage("Description must be between 10 and 200 characters.");
         }
     }
 }
