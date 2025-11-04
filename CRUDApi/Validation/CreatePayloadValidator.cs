@@ -12,7 +12,7 @@ namespace CRUDApi.Validation
                 .Length(2, 50).WithMessage("Name must be between 2 and 50 characters.")
                 .Matches("^[A-Za-z]{2,50}$").WithMessage("Name must contain only letters (A–Z), without numbers or special characters.");
 
-            // Description validationk
+            // Description validation
             RuleFor(D => D.Description).NotEmpty().WithMessage("Description is required.")
                 .Length(10, 200).WithMessage("Description must be between 10 and 200 characters.")
                 .Matches("^[A-Za-z]{10,200}$").WithMessage("Description must contain only letters(A–Z) without numbers or special characters.");
