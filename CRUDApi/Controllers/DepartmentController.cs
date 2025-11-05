@@ -8,8 +8,8 @@ namespace CRUDApi.Controllers
     [ApiController]
     public class DepartmentController : ControllerBase
     {
-        private readonly IDepartment _dept;
-        public DepartmentController(IDepartment dept)
+        private readonly IDepartmentService _dept;
+        public DepartmentController(IDepartmentService dept)
         {
             _dept = dept;
         }
@@ -17,7 +17,7 @@ namespace CRUDApi.Controllers
         [HttpGet]
         public async Task<ActionResult> Get()
         {
-            var depts = await _dept.GetDepartments();
+            var depts = await _dept.GetAllDepartments();
             return Ok(depts);
         }
 
@@ -31,14 +31,14 @@ namespace CRUDApi.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult> Get(int id)
         {
-            var dept = await _dept.GetDepartment(id);
+            var dept = await _dept.GetDepartmentById(id);
             return Ok(dept);
         }
 
         [HttpPost]
         public async Task<ActionResult> Create([FromBody]CreatePayload payload)
         {
-            var createDept = await _dept.AddDepartment(payload);
+            var createDept = await _dept.CreateDepartment(payload);
             return Ok(createDept);
         }
 

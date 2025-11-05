@@ -18,10 +18,10 @@ namespace CRUDApi
 
             builder.Services.AddControllers();
 
+            builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            builder.Services.AddScoped<IDepartmentService, DepartmentService>();
             builder.Services.AddDbContext<DeptDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("conStr")));
-
-            builder.Services.AddScoped<IDepartment, DepartmentRepository>();
 
             builder.Services.AddCors(options =>
             {
