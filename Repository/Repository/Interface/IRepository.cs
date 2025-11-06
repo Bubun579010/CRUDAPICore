@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace CRUDApi.Repository
+namespace Repository.Repository.Interface
 {
     public interface IRepository<T> where T : class
     {

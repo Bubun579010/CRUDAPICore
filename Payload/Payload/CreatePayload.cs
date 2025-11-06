@@ -1,8 +1,7 @@
-﻿namespace CRUDApi.Models.Payload
+﻿namespace Payload.Payload
 {
-    public class UpdatePayload
+    public class CreatePayload
     {
-        public int ID { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool? Status { get; set; }

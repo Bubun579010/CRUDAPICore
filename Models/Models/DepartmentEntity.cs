@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-namespace CRUDApi.Models
+
+namespace Models.Models
 {
     public class DepartmentEntity
     {
@@ -10,14 +11,14 @@ namespace CRUDApi.Models
 
         [Required]
         [MaxLength(50)]
-        [Column(TypeName ="Varchar")]
+        [Column(TypeName = "Varchar")]
         public string Name { get; set; }
 
         [Required]
         [MaxLength(200)]
-        [Column(TypeName ="Varchar")]
+        [Column(TypeName = "Varchar")]
         public string Description { get; set; }
-        public bool? Status {  get; set; }
+        public bool? Status { get; set; }
 
         [Required]
         [DataType(DataType.DateTime)]

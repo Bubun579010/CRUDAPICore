@@ -1,8 +1,10 @@
-﻿using CRUDApi.Models;
-using CRUDApi.Models.Common;
-using CRUDApi.Models.Payload;
+﻿using Models.Models;
+using Payload.Common;
+using Payload.Payload;
+using Repository.Repository.Interface;
+using Service.Service.Interface;
 
-namespace CRUDApi.Repository.Services
+namespace Service.Service.Implementation
 {
     public class DepartmentService : IDepartmentService
     {

@@ -1,18 +1,19 @@
-﻿using CRUDApi.Data;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Repository.Repository.Interface;
 using System.Linq.Expressions;
 using System.Reflection;
+using Data.Data;
 
-namespace CRUDApi.Repository
+namespace Repository.Repository.Implementation
 {
     public class Repository<T> : IRepository<T> where T : class
     {
         private readonly DbSet<T> _dbSet;
-        private readonly DeptDbContext _deptDbContext;
-        public Repository(DeptDbContext deptDbContext)
+        private readonly MyDbContext _myDbContext;
+        public Repository(MyDbContext myDbContext)
         {
-            _dbSet = deptDbContext.Set<T>();
-            _deptDbContext = deptDbContext;
+            _dbSet = myDbContext.Set<T>();
+            _myDbContext = myDbContext;
         }
 
         public async Task<IEnumerable<T>> GetAll()
@@ -28,23 +29,23 @@ namespace CRUDApi.Repository
         public async Task<T> Add(T entity)
         {
             await _dbSet.AddAsync(entity);
-            await _deptDbContext.SaveChangesAsync();
+            await _myDbContext.SaveChangesAsync();
             return entity;
         }
 
         public async Task<T> Update(T entity)
         {
             _dbSet.Attach(entity);
-            _deptDbContext.Entry(entity).State = EntityState.Modified;
-            await _deptDbContext.SaveChangesAsync();
+            _myDbContext.Entry(entity).State = EntityState.Modified;
+            await _myDbContext.SaveChangesAsync();
             return entity;
         }
 
         public async Task<T> Delete(T entity)
         {
             //_dbSet.Remove(entity);
-            _deptDbContext.Entry(entity).State = EntityState.Modified;
-            await _deptDbContext.SaveChangesAsync();
+            _myDbContext.Entry(entity).State = EntityState.Modified;
+            await _myDbContext.SaveChangesAsync();
             return entity;
         }
 

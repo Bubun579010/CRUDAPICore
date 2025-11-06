@@ -1,5 +1,5 @@
-﻿using CRUDApi.Models.Payload;
-using FluentValidation;
+﻿using FluentValidation;
+using Payload.Payload;
 
 namespace CRUDApi.Validation
 {

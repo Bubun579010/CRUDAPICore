@@ -1,6 +1,6 @@
-﻿using CRUDApi.Models.Payload;
-using CRUDApi.Repository;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Payload.Payload;
+using Service.Service.Interface;
 
 namespace CRUDApi.Controllers
 {
@@ -36,7 +36,7 @@ namespace CRUDApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody]CreatePayload payload)
+        public async Task<ActionResult> Create([FromBody] CreatePayload payload)
         {
             var createDept = await _dept.CreateDepartment(payload);
             return Ok(createDept);

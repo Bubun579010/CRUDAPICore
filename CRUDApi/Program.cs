@@ -1,10 +1,12 @@
-using CRUDApi.Data;
 using CRUDApi.ExceptionHandler;
-using CRUDApi.Repository;
-using CRUDApi.Repository.Services;
+using Data.Data;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
+using Repository.Repository.Implementation;
+using Repository.Repository.Interface;
+using Service.Service.Implementation;
+using Service.Service.Interface;
 
 namespace CRUDApi
 {
@@ -20,7 +22,7 @@ namespace CRUDApi
 
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddScoped<IDepartmentService, DepartmentService>();
-            builder.Services.AddDbContext<DeptDbContext>(options =>
+            builder.Services.AddDbContext<MyDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("conStr")));
 
             builder.Services.AddCors(options =>
